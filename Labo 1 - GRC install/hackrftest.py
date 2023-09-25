@@ -6,24 +6,36 @@
 #
 # GNU Radio Python Flow Graph
 # Title: hackrftest
-# GNU Radio version: 3.10.7.0
+# GNU Radio version: 3.10.1.1
 
 from packaging.version import Version as StrictVersion
+
+if __name__ == '__main__':
+    import ctypes
+    import sys
+    if sys.platform.startswith('linux'):
+        try:
+            x11 = ctypes.cdll.LoadLibrary('libX11.so')
+            x11.XInitThreads()
+        except:
+            print("Warning: failed to XInitThreads()")
+
 from PyQt5 import Qt
 from gnuradio import qtgui
-from gnuradio import gr
 from gnuradio.filter import firdes
+import sip
+from gnuradio import gr
 from gnuradio.fft import window
 import sys
 import signal
-from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio import soapy
-import sip
 
 
+
+from gnuradio import qtgui
 
 class hackrftest(gr.top_block, Qt.QWidget):
 
@@ -34,8 +46,8 @@ class hackrftest(gr.top_block, Qt.QWidget):
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
-        except BaseException as exc:
-            print(f"Qt GUI: Could not set Icon: {str(exc)}", file=sys.stderr)
+        except:
+            pass
         self.top_scroll_layout = Qt.QVBoxLayout()
         self.setLayout(self.top_scroll_layout)
         self.top_scroll = Qt.QScrollArea()
@@ -55,8 +67,8 @@ class hackrftest(gr.top_block, Qt.QWidget):
                 self.restoreGeometry(self.settings.value("geometry").toByteArray())
             else:
                 self.restoreGeometry(self.settings.value("geometry"))
-        except BaseException as exc:
-            print(f"Qt GUI: Could not restore geometry: {str(exc)}", file=sys.stderr)
+        except:
+            pass
 
         ##################################################
         # Variables
@@ -66,7 +78,6 @@ class hackrftest(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
-
         self.soapy_hackrf_source_0 = None
         dev = 'driver=hackrf'
         stream_args = ''
@@ -91,7 +102,7 @@ class hackrftest(gr.top_block, Qt.QWidget):
             None # parent
         )
         self.qtgui_freq_sink_x_0.set_update_time(0.10)
-        self.qtgui_freq_sink_x_0.set_y_axis((-140), 10)
+        self.qtgui_freq_sink_x_0.set_y_axis(-140, 10)
         self.qtgui_freq_sink_x_0.set_y_label('Relative Gain', 'dB')
         self.qtgui_freq_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
         self.qtgui_freq_sink_x_0.enable_autoscale(False)
