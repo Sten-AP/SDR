@@ -72,7 +72,7 @@ blocks:
     option2: '2'
     option3: '3'
     option4: '4'
-    options: '[446006250,446018750,446031250 ,446043750,446056250,446068750,446081250,446093750]'
+    options: '[435000000, 446006250,446018750,446031250 ,446043750,446056250,446068750,446081250,446093750]'
     orient: Qt.QVBoxLayout
     type: int
     value: '446006250'
@@ -152,7 +152,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [266, 157]
+    coordinate: [320, 196.0]
     rotation: 0
     state: enabled
 - name: analog_frequency_modulator_fc_0
@@ -187,9 +187,31 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [40, 132.0]
+    coordinate: [64, 140.0]
     rotation: 0
     state: enabled
+- name: blocks_file_source_0
+  id: blocks_file_source
+  parameters:
+    affinity: ''
+    alias: ''
+    begin_tag: pmt.PMT_NIL
+    comment: ''
+    file: pmrtest
+    length: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    repeat: 'True'
+    type: float
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [48, 348.0]
+    rotation: 0
+    state: disabled
 - name: blocks_multiply_const_vxx_0
   id: blocks_multiply_const_vxx
   parameters:
@@ -618,7 +640,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [920, 408.0]
+    coordinate: [928, 424.0]
     rotation: 0
     state: disabled
 
@@ -626,6 +648,7 @@ connections:
 - [analog_fm_preemph_0, '0', blocks_multiply_const_vxx_0, '0']
 - [analog_frequency_modulator_fc_0, '0', pttsw, '0']
 - [audio_source_0, '0', analog_fm_preemph_0, '0']
+- [blocks_file_source_0, '0', analog_fm_preemph_0, '0']
 - [blocks_multiply_const_vxx_0, '0', analog_frequency_modulator_fc_0, '0']
 - [pttsw, '0', qtgui_freq_sink_x_0, '0']
 - [pttsw, '0', rational_resampler_xxx_0, '0']

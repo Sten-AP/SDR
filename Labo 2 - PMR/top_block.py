@@ -81,22 +81,18 @@ class top_block(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate = samp_rate = 48e3
-        self.ptt = ptt = 0
-        self.intpol = intpol = 125
-        self.decpol = decpol = 6
+        self.volume = volume = 0.01
+        self.shift = shift = -15000
+        self.samp_rate = samp_rate = 1e6
+        self.channel_samp_rate = channel_samp_rate = 96e3
         self.PMR = PMR = 446006250
-        self.AFgain = AFgain = 10
 
         ##################################################
         # Blocks
         ##################################################
-        _ptt_push_button = Qt.QPushButton('')
-        _ptt_push_button = Qt.QPushButton('ptt')
-        self._ptt_choices = {'Pressed': 1, 'Released': 0}
-        _ptt_push_button.pressed.connect(lambda: self.set_ptt(self._ptt_choices['Pressed']))
-        _ptt_push_button.released.connect(lambda: self.set_ptt(self._ptt_choices['Released']))
-        self.top_layout.addWidget(_ptt_push_button)
+        self._volume_range = Range(0, 0.1, 0.001, 0.01, 200)
+        self._volume_win = RangeWidget(self._volume_range, self.set_volume, "'volume'", "slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._volume_win)
         # Create the options list
         self._PMR_options = [446006250, 446018750, 446031250, 446043750, 446056250, 446068750, 446081250, 446093750]
         # Create the labels list
@@ -113,19 +109,16 @@ class top_block(gr.top_block, Qt.QWidget):
             lambda i: self.set_PMR(self._PMR_options[i]))
         # Create the radio buttons
         self.top_layout.addWidget(self._PMR_tool_bar)
-        self._AFgain_range = Range(0, 50, 1, 10, 200)
-        self._AFgain_win = RangeWidget(self._AFgain_range, self.set_AFgain, "'AFgain'", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._AFgain_win)
         self.rational_resampler_xxx_0 = filter.rational_resampler_ccc(
-                interpolation=intpol,
-                decimation=decpol,
+                interpolation=12,
+                decimation=125,
                 taps=[],
                 fractional_bw=0)
         self.qtgui_freq_sink_x_0 = qtgui.freq_sink_c(
             1024, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
             0, #fc
-            samp_rate, #bw
+            channel_samp_rate, #bw
             "", #name
             1,
             None # parent
@@ -163,35 +156,56 @@ class top_block(gr.top_block, Qt.QWidget):
 
         self._qtgui_freq_sink_x_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_win)
-        self.pttsw = blocks.multiply_const_cc(ptt)
-        self.osmosdr_sink_0 = osmosdr.sink(
+        self.osmosdr_source_0 = osmosdr.source(
             args="numchan=" + str(1) + " " + ""
         )
-        self.osmosdr_sink_0.set_time_unknown_pps(osmosdr.time_spec_t())
-        self.osmosdr_sink_0.set_sample_rate(samp_rate*intpol/decpol)
-        self.osmosdr_sink_0.set_center_freq(PMR+((1-ptt)*(-13500000)), 0)
-        self.osmosdr_sink_0.set_freq_corr(0, 0)
-        self.osmosdr_sink_0.set_gain(10, 0)
-        self.osmosdr_sink_0.set_if_gain(30, 0)
-        self.osmosdr_sink_0.set_bb_gain(20, 0)
-        self.osmosdr_sink_0.set_antenna('', 0)
-        self.osmosdr_sink_0.set_bandwidth(0, 0)
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(AFgain)
-        self.audio_source_0 = audio.source(48000, '', False)
-        self.analog_frequency_modulator_fc_0 = analog.frequency_modulator_fc(0.5)
-        self.analog_fm_preemph_0 = analog.fm_preemph(fs=samp_rate, tau=50e-6, fh=-1.0)
+        self.osmosdr_source_0.set_time_unknown_pps(osmosdr.time_spec_t())
+        self.osmosdr_source_0.set_sample_rate(samp_rate)
+        self.osmosdr_source_0.set_center_freq(PMR+shift, 0)
+        self.osmosdr_source_0.set_freq_corr(0, 0)
+        self.osmosdr_source_0.set_dc_offset_mode(0, 0)
+        self.osmosdr_source_0.set_iq_balance_mode(0, 0)
+        self.osmosdr_source_0.set_gain_mode(False, 0)
+        self.osmosdr_source_0.set_gain(10, 0)
+        self.osmosdr_source_0.set_if_gain(20, 0)
+        self.osmosdr_source_0.set_bb_gain(20, 0)
+        self.osmosdr_source_0.set_antenna('', 0)
+        self.osmosdr_source_0.set_bandwidth(0, 0)
+        self.low_pass_filter_1 = filter.fir_filter_ccf(
+            1,
+            firdes.low_pass(
+                1,
+                channel_samp_rate,
+                10e3,
+                1e3,
+                window.WIN_HAMMING,
+                6.76))
+        self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(volume)
+        self.audio_sink_0 = audio.sink(16000, '', True)
+        self.analog_sig_source_x_0 = analog.sig_source_c(samp_rate, analog.GR_COS_WAVE, shift, 1, 0, 0)
+        self.analog_fm_demod_cf_0 = analog.fm_demod_cf(
+        	channel_rate=channel_samp_rate,
+        	audio_decim=6,
+        	deviation=5000,
+        	audio_pass=15000,
+        	audio_stop=20000,
+        	gain=1.0,
+        	tau=50e-6,
+        )
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_fm_preemph_0, 0), (self.blocks_multiply_const_vxx_0, 0))
-        self.connect((self.analog_frequency_modulator_fc_0, 0), (self.pttsw, 0))
-        self.connect((self.audio_source_0, 0), (self.analog_fm_preemph_0, 0))
-        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.analog_frequency_modulator_fc_0, 0))
-        self.connect((self.pttsw, 0), (self.qtgui_freq_sink_x_0, 0))
-        self.connect((self.pttsw, 0), (self.rational_resampler_xxx_0, 0))
-        self.connect((self.rational_resampler_xxx_0, 0), (self.osmosdr_sink_0, 0))
+        self.connect((self.analog_fm_demod_cf_0, 0), (self.blocks_multiply_const_vxx_0, 0))
+        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_multiply_xx_0, 1))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.audio_sink_0, 0))
+        self.connect((self.blocks_multiply_xx_0, 0), (self.rational_resampler_xxx_0, 0))
+        self.connect((self.low_pass_filter_1, 0), (self.analog_fm_demod_cf_0, 0))
+        self.connect((self.low_pass_filter_1, 0), (self.qtgui_freq_sink_x_0, 0))
+        self.connect((self.osmosdr_source_0, 0), (self.blocks_multiply_xx_0, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.low_pass_filter_1, 0))
 
 
     def closeEvent(self, event):
@@ -202,35 +216,36 @@ class top_block(gr.top_block, Qt.QWidget):
 
         event.accept()
 
+    def get_volume(self):
+        return self.volume
+
+    def set_volume(self, volume):
+        self.volume = volume
+        self.blocks_multiply_const_vxx_0.set_k(self.volume)
+
+    def get_shift(self):
+        return self.shift
+
+    def set_shift(self, shift):
+        self.shift = shift
+        self.analog_sig_source_x_0.set_frequency(self.shift)
+        self.osmosdr_source_0.set_center_freq(self.PMR+self.shift, 0)
+
     def get_samp_rate(self):
         return self.samp_rate
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.osmosdr_sink_0.set_sample_rate(self.samp_rate*self.intpol/self.decpol)
-        self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate)
+        self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
+        self.osmosdr_source_0.set_sample_rate(self.samp_rate)
 
-    def get_ptt(self):
-        return self.ptt
+    def get_channel_samp_rate(self):
+        return self.channel_samp_rate
 
-    def set_ptt(self, ptt):
-        self.ptt = ptt
-        self.osmosdr_sink_0.set_center_freq(self.PMR+((1-self.ptt)*(-13500000)), 0)
-        self.pttsw.set_k(self.ptt)
-
-    def get_intpol(self):
-        return self.intpol
-
-    def set_intpol(self, intpol):
-        self.intpol = intpol
-        self.osmosdr_sink_0.set_sample_rate(self.samp_rate*self.intpol/self.decpol)
-
-    def get_decpol(self):
-        return self.decpol
-
-    def set_decpol(self, decpol):
-        self.decpol = decpol
-        self.osmosdr_sink_0.set_sample_rate(self.samp_rate*self.intpol/self.decpol)
+    def set_channel_samp_rate(self, channel_samp_rate):
+        self.channel_samp_rate = channel_samp_rate
+        self.low_pass_filter_1.set_taps(firdes.low_pass(1, self.channel_samp_rate, 10e3, 1e3, window.WIN_HAMMING, 6.76))
+        self.qtgui_freq_sink_x_0.set_frequency_range(0, self.channel_samp_rate)
 
     def get_PMR(self):
         return self.PMR
@@ -238,14 +253,7 @@ class top_block(gr.top_block, Qt.QWidget):
     def set_PMR(self, PMR):
         self.PMR = PMR
         self._PMR_callback(self.PMR)
-        self.osmosdr_sink_0.set_center_freq(self.PMR+((1-self.ptt)*(-13500000)), 0)
-
-    def get_AFgain(self):
-        return self.AFgain
-
-    def set_AFgain(self, AFgain):
-        self.AFgain = AFgain
-        self.blocks_multiply_const_vxx_0.set_k(self.AFgain)
+        self.osmosdr_source_0.set_center_freq(self.PMR+self.shift, 0)
 
 
 
