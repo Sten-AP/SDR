@@ -33,11 +33,41 @@ options:
     state: enabled
 
 blocks:
+- name: chooser
+  id: variable_qtgui_chooser
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: ''
+    label0: radio1
+    label1: radio2
+    label2: radio3
+    label3: radio4
+    label4: ''
+    labels: '[]'
+    num_opts: '4'
+    option0: '107800000'
+    option1: '106800000'
+    option2: '98500000'
+    option3: '102400000'
+    option4: '4'
+    options: '[0, 1, 2]'
+    orient: Qt.QHBoxLayout
+    type: real
+    value: '107800000'
+    widget: combo_box
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [24, 708.0]
+    rotation: 0
+    state: enabled
 - name: decimatiefactor
   id: variable
   parameters:
     comment: ''
-    value: '4'
+    value: '5'
   states:
     bus_sink: false
     bus_source: false
@@ -57,6 +87,44 @@ blocks:
     coordinate: [184, 12]
     rotation: 0
     state: enabled
+- name: squelch
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: ''
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '-100'
+    step: '1'
+    stop: '0'
+    value: '-40'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [24, 580.0]
+    rotation: 0
+    state: true
+- name: squelchswitch
+  id: variable_qtgui_check_box
+  parameters:
+    comment: ''
+    'false': '100'
+    gui_hint: ''
+    label: ''
+    'true': '0'
+    type: int
+    value: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [240, 580.0]
+    rotation: 0
+    state: true
 - name: tuner_frequentie
   id: variable_qtgui_range
   parameters:
@@ -69,7 +137,7 @@ blocks:
     start: 88e6
     step: 100e3
     stop: 108e6
-    value: '107800000'
+    value: chooser
     widget: counter_slider
   states:
     bus_sink: false
@@ -77,7 +145,7 @@ blocks:
     bus_structure: null
     coordinate: [24, 244.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: volume
   id: variable_qtgui_range
   parameters:
@@ -96,7 +164,24 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [16, 476.0]
+    coordinate: [24, 452.0]
+    rotation: 0
+    state: true
+- name: analog_simple_squelch_cc_0
+  id: analog_simple_squelch_cc
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '0.1'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    threshold: squelch - squelchswitch
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [632, 436.0]
     rotation: 0
     state: true
 - name: analog_wfm_rcv_0
@@ -553,7 +638,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [232, 84.0]
+    coordinate: [224, 100.0]
     rotation: 0
     state: true
 - name: qtgui_freq_sink_x_0
@@ -718,6 +803,87 @@ blocks:
     coordinate: [1656, 428.0]
     rotation: 0
     state: enabled
+- name: qtgui_freq_sink_x_1
+  id: qtgui_freq_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha1: '1.0'
+    alpha10: '1.0'
+    alpha2: '1.0'
+    alpha3: '1.0'
+    alpha4: '1.0'
+    alpha5: '1.0'
+    alpha6: '1.0'
+    alpha7: '1.0'
+    alpha8: '1.0'
+    alpha9: '1.0'
+    autoscale: 'False'
+    average: '1.0'
+    axislabels: 'True'
+    bw: samp_rate
+    color1: '"blue"'
+    color10: '"dark blue"'
+    color2: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
+    comment: ''
+    ctrlpanel: 'False'
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
+    grid: 'False'
+    gui_hint: ''
+    label: Relative Gain
+    label1: ''
+    label10: ''''''
+    label2: ''''''
+    label3: ''''''
+    label4: ''''''
+    label5: ''''''
+    label6: ''''''
+    label7: ''''''
+    label8: ''''''
+    label9: ''''''
+    legend: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: '""'
+    nconnections: '1'
+    norm_window: 'False'
+    showports: 'False'
+    tr_chan: '0'
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
+    tr_tag: '""'
+    type: complex
+    units: dB
+    update_time: '0.10'
+    width1: '1'
+    width10: '1'
+    width2: '1'
+    width3: '1'
+    width4: '1'
+    width5: '1'
+    width6: '1'
+    width7: '1'
+    width8: '1'
+    width9: '1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '10'
+    ymin: '-140'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [552, 276.0]
+    rotation: 0
+    state: true
 - name: rational_resampler_xxx_0
   id: rational_resampler_xxx
   parameters:
@@ -744,9 +910,9 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    decim: '32'
+    decim: '100'
     fbw: '0'
-    interp: '4'
+    interp: '24'
     maxoutbuf: '0'
     minoutbuf: '0'
     taps: '[]'
@@ -760,13 +926,15 @@ blocks:
     state: enabled
 
 connections:
+- [analog_simple_squelch_cc_0, '0', analog_wfm_rcv_0, '0']
 - [analog_wfm_rcv_0, '0', low_pass_filter_1, '0']
 - [blocks_multiply_const_vxx_0, '0', audio_sink_0, '0']
 - [blocks_multiply_const_vxx_0, '0', qtgui_freq_sink_x_0_0, '0']
 - [low_pass_filter_0, '0', rational_resampler_xxx_0, '0']
 - [low_pass_filter_1, '0', rational_resampler_xxx_1, '0']
 - [osmosdr_source_0, '0', low_pass_filter_0, '0']
-- [rational_resampler_xxx_0, '0', analog_wfm_rcv_0, '0']
+- [osmosdr_source_0, '0', qtgui_freq_sink_x_1, '0']
+- [rational_resampler_xxx_0, '0', analog_simple_squelch_cc_0, '0']
 - [rational_resampler_xxx_0, '0', qtgui_freq_sink_x_0, '0']
 - [rational_resampler_xxx_1, '0', blocks_multiply_const_vxx_0, '0']
 

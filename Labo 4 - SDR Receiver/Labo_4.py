@@ -21,6 +21,7 @@ if __name__ == '__main__':
             print("Warning: failed to XInitThreads()")
 
 from PyQt5 import Qt
+from PyQt5.QtCore import QObject, pyqtSlot
 from gnuradio import qtgui
 from gnuradio.filter import firdes
 import sip
@@ -80,23 +81,52 @@ class Labo_4(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
+        self.chooser = chooser = 107800000
         self.volume = volume = 0.01
-        self.tuner_frequentie = tuner_frequentie = 107800000
+        self.tuner_frequentie = tuner_frequentie = chooser
+        self.squelchswitch = squelchswitch = 0
+        self.squelch = squelch = -40
         self.samp_rate = samp_rate = 1e6
-        self.decimatiefactor = decimatiefactor = 4
+        self.decimatiefactor = decimatiefactor = 5
 
         ##################################################
         # Blocks
         ##################################################
+        # Create the options list
+        self._chooser_options = [107800000, 106800000, 98500000, 102400000]
+        # Create the labels list
+        self._chooser_labels = ['radio1', 'radio2', 'radio3', 'radio4']
+        # Create the combo box
+        self._chooser_tool_bar = Qt.QToolBar(self)
+        self._chooser_tool_bar.addWidget(Qt.QLabel("'chooser'" + ": "))
+        self._chooser_combo_box = Qt.QComboBox()
+        self._chooser_tool_bar.addWidget(self._chooser_combo_box)
+        for _label in self._chooser_labels: self._chooser_combo_box.addItem(_label)
+        self._chooser_callback = lambda i: Qt.QMetaObject.invokeMethod(self._chooser_combo_box, "setCurrentIndex", Qt.Q_ARG("int", self._chooser_options.index(i)))
+        self._chooser_callback(self.chooser)
+        self._chooser_combo_box.currentIndexChanged.connect(
+            lambda i: self.set_chooser(self._chooser_options[i]))
+        # Create the radio buttons
+        self.top_layout.addWidget(self._chooser_tool_bar)
         self._volume_range = Range(0, 1, 0.01, 0.01, 200)
         self._volume_win = RangeWidget(self._volume_range, self.set_volume, "'volume'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._volume_win)
-        self._tuner_frequentie_range = Range(88e6, 108e6, 100e3, 107800000, 200)
+        self._tuner_frequentie_range = Range(88e6, 108e6, 100e3, chooser, 200)
         self._tuner_frequentie_win = RangeWidget(self._tuner_frequentie_range, self.set_tuner_frequentie, "'tuner_frequentie'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._tuner_frequentie_win)
+        _squelchswitch_check_box = Qt.QCheckBox("'squelchswitch'")
+        self._squelchswitch_choices = {True: 0, False: 100}
+        self._squelchswitch_choices_inv = dict((v,k) for k,v in self._squelchswitch_choices.items())
+        self._squelchswitch_callback = lambda i: Qt.QMetaObject.invokeMethod(_squelchswitch_check_box, "setChecked", Qt.Q_ARG("bool", self._squelchswitch_choices_inv[i]))
+        self._squelchswitch_callback(self.squelchswitch)
+        _squelchswitch_check_box.stateChanged.connect(lambda i: self.set_squelchswitch(self._squelchswitch_choices[bool(i)]))
+        self.top_layout.addWidget(_squelchswitch_check_box)
+        self._squelch_range = Range(-100, 0, 1, -40, 200)
+        self._squelch_win = RangeWidget(self._squelch_range, self.set_squelch, "'squelch'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._squelch_win)
         self.rational_resampler_xxx_1 = filter.rational_resampler_fff(
-                interpolation=4,
-                decimation=32,
+                interpolation=24,
+                decimation=100,
                 taps=[],
                 fractional_bw=0)
         self.rational_resampler_xxx_0 = filter.rational_resampler_ccc(
@@ -104,6 +134,48 @@ class Labo_4(gr.top_block, Qt.QWidget):
                 decimation=decimatiefactor,
                 taps=[],
                 fractional_bw=0)
+        self.qtgui_freq_sink_x_1 = qtgui.freq_sink_c(
+            1024, #size
+            window.WIN_BLACKMAN_hARRIS, #wintype
+            0, #fc
+            samp_rate, #bw
+            "", #name
+            1,
+            None # parent
+        )
+        self.qtgui_freq_sink_x_1.set_update_time(0.10)
+        self.qtgui_freq_sink_x_1.set_y_axis(-140, 10)
+        self.qtgui_freq_sink_x_1.set_y_label('Relative Gain', 'dB')
+        self.qtgui_freq_sink_x_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
+        self.qtgui_freq_sink_x_1.enable_autoscale(False)
+        self.qtgui_freq_sink_x_1.enable_grid(False)
+        self.qtgui_freq_sink_x_1.set_fft_average(1.0)
+        self.qtgui_freq_sink_x_1.enable_axis_labels(True)
+        self.qtgui_freq_sink_x_1.enable_control_panel(False)
+        self.qtgui_freq_sink_x_1.set_fft_window_normalized(False)
+
+
+
+        labels = ['', '', '', '', '',
+            '', '', '', '', '']
+        widths = [1, 1, 1, 1, 1,
+            1, 1, 1, 1, 1]
+        colors = ["blue", "red", "green", "black", "cyan",
+            "magenta", "yellow", "dark red", "dark green", "dark blue"]
+        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 1.0, 1.0, 1.0]
+
+        for i in range(1):
+            if len(labels[i]) == 0:
+                self.qtgui_freq_sink_x_1.set_line_label(i, "Data {0}".format(i))
+            else:
+                self.qtgui_freq_sink_x_1.set_line_label(i, labels[i])
+            self.qtgui_freq_sink_x_1.set_line_width(i, widths[i])
+            self.qtgui_freq_sink_x_1.set_line_color(i, colors[i])
+            self.qtgui_freq_sink_x_1.set_line_alpha(i, alphas[i])
+
+        self._qtgui_freq_sink_x_1_win = sip.wrapinstance(self.qtgui_freq_sink_x_1.qwidget(), Qt.QWidget)
+        self.top_layout.addWidget(self._qtgui_freq_sink_x_1_win)
         self.qtgui_freq_sink_x_0_0 = qtgui.freq_sink_f(
             1024, #size
             window.WIN_BLACKMAN_hARRIS, #wintype
@@ -228,18 +300,21 @@ class Labo_4(gr.top_block, Qt.QWidget):
         	quad_rate=samp_rate / decimatiefactor,
         	audio_decimation=1,
         )
+        self.analog_simple_squelch_cc_0 = analog.simple_squelch_cc(squelch - squelchswitch, 0.1)
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.analog_simple_squelch_cc_0, 0), (self.analog_wfm_rcv_0, 0))
         self.connect((self.analog_wfm_rcv_0, 0), (self.low_pass_filter_1, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.audio_sink_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.qtgui_freq_sink_x_0_0, 0))
         self.connect((self.low_pass_filter_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.low_pass_filter_1, 0), (self.rational_resampler_xxx_1, 0))
         self.connect((self.osmosdr_source_0, 0), (self.low_pass_filter_0, 0))
-        self.connect((self.rational_resampler_xxx_0, 0), (self.analog_wfm_rcv_0, 0))
+        self.connect((self.osmosdr_source_0, 0), (self.qtgui_freq_sink_x_1, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.analog_simple_squelch_cc_0, 0))
         self.connect((self.rational_resampler_xxx_0, 0), (self.qtgui_freq_sink_x_0, 0))
         self.connect((self.rational_resampler_xxx_1, 0), (self.blocks_multiply_const_vxx_0, 0))
 
@@ -251,6 +326,14 @@ class Labo_4(gr.top_block, Qt.QWidget):
         self.wait()
 
         event.accept()
+
+    def get_chooser(self):
+        return self.chooser
+
+    def set_chooser(self, chooser):
+        self.chooser = chooser
+        self._chooser_callback(self.chooser)
+        self.set_tuner_frequentie(self.chooser)
 
     def get_volume(self):
         return self.volume
@@ -266,6 +349,21 @@ class Labo_4(gr.top_block, Qt.QWidget):
         self.tuner_frequentie = tuner_frequentie
         self.osmosdr_source_0.set_center_freq(self.tuner_frequentie, 0)
 
+    def get_squelchswitch(self):
+        return self.squelchswitch
+
+    def set_squelchswitch(self, squelchswitch):
+        self.squelchswitch = squelchswitch
+        self._squelchswitch_callback(self.squelchswitch)
+        self.analog_simple_squelch_cc_0.set_threshold(self.squelch - self.squelchswitch)
+
+    def get_squelch(self):
+        return self.squelch
+
+    def set_squelch(self, squelch):
+        self.squelch = squelch
+        self.analog_simple_squelch_cc_0.set_threshold(self.squelch - self.squelchswitch)
+
     def get_samp_rate(self):
         return self.samp_rate
 
@@ -276,6 +374,7 @@ class Labo_4(gr.top_block, Qt.QWidget):
         self.osmosdr_source_0.set_sample_rate(self.samp_rate)
         self.qtgui_freq_sink_x_0.set_frequency_range(0, self.samp_rate / self.decimatiefactor)
         self.qtgui_freq_sink_x_0_0.set_frequency_range(0, self.samp_rate / self.decimatiefactor)
+        self.qtgui_freq_sink_x_1.set_frequency_range(0, self.samp_rate)
 
     def get_decimatiefactor(self):
         return self.decimatiefactor
