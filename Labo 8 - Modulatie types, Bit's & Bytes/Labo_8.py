@@ -5,14 +5,13 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Oefening 3
+# Title: Oefening 4
 # Author: sten
 # GNU Radio version: 3.10.7.0
 
 from packaging.version import Version as StrictVersion
 from PyQt5 import Qt
 from gnuradio import qtgui
-from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import channels
 from gnuradio.filter import firdes
@@ -25,18 +24,18 @@ from PyQt5 import Qt
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
+from gnuradio import network
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
-import sip
 
 
 
 class Labo_8(gr.top_block, Qt.QWidget):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Oefening 3", catch_exceptions=True)
+        gr.top_block.__init__(self, "Oefening 4", catch_exceptions=True)
         Qt.QWidget.__init__(self)
-        self.setWindowTitle("Oefening 3")
+        self.setWindowTitle("Oefening 4")
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
@@ -67,158 +66,63 @@ class Labo_8(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate = samp_rate = 20000
-        self.afstand = afstand = 0.01
+        self.select = select = True
+        self.samp_rate = samp_rate = 100
+        self.afstand = afstand = 0
 
         ##################################################
         # Blocks
         ##################################################
 
-        self._afstand_range = Range(0.01, 2, 0.01, 0.01, 200)
-        self._afstand_win = RangeWidget(self._afstand_range, self.set_afstand, "'afstand'", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._afstand_win)
-        self.qtgui_time_sink_x_0_1 = qtgui.time_sink_f(
-            1024, #size
-            samp_rate, #samp_rate
-            "", #name
-            1, #number of inputs
-            None # parent
-        )
-        self.qtgui_time_sink_x_0_1.set_update_time(0.10)
-        self.qtgui_time_sink_x_0_1.set_y_axis(-1, 1)
-
-        self.qtgui_time_sink_x_0_1.set_y_label('Amplitude', "")
-
-        self.qtgui_time_sink_x_0_1.enable_tags(True)
-        self.qtgui_time_sink_x_0_1.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0_1.enable_autoscale(True)
-        self.qtgui_time_sink_x_0_1.enable_grid(False)
-        self.qtgui_time_sink_x_0_1.enable_axis_labels(True)
-        self.qtgui_time_sink_x_0_1.enable_control_panel(False)
-        self.qtgui_time_sink_x_0_1.enable_stem_plot(False)
-
-
-        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
-            'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ['blue', 'red', 'green', 'black', 'cyan',
-            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-        styles = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1]
-
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_0_1.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_0_1.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_0_1.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_0_1.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_0_1.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_0_1.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_0_1.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_sink_x_0_1_win = sip.wrapinstance(self.qtgui_time_sink_x_0_1.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_0_1_win)
-        self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
-            1024, #size
-            samp_rate, #samp_rate
-            "", #name
-            1, #number of inputs
-            None # parent
-        )
-        self.qtgui_time_sink_x_0.set_update_time(0.10)
-        self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
-
-        self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
-
-        self.qtgui_time_sink_x_0.enable_tags(True)
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
-        self.qtgui_time_sink_x_0.enable_autoscale(True)
-        self.qtgui_time_sink_x_0.enable_grid(False)
-        self.qtgui_time_sink_x_0.enable_axis_labels(True)
-        self.qtgui_time_sink_x_0.enable_control_panel(False)
-        self.qtgui_time_sink_x_0.enable_stem_plot(False)
-
-
-        labels = ['Signal 1', 'Signal 2', 'Signal 3', 'Signal 4', 'Signal 5',
-            'Signal 6', 'Signal 7', 'Signal 8', 'Signal 9', 'Signal 10']
-        widths = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        colors = ['blue', 'red', 'green', 'black', 'cyan',
-            'magenta', 'yellow', 'dark red', 'dark green', 'dark blue']
-        alphas = [1.0, 1.0, 1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0, 1.0, 1.0]
-        styles = [1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1]
-        markers = [-1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1]
-
-
-        for i in range(1):
-            if len(labels[i]) == 0:
-                self.qtgui_time_sink_x_0.set_line_label(i, "Data {0}".format(i))
-            else:
-                self.qtgui_time_sink_x_0.set_line_label(i, labels[i])
-            self.qtgui_time_sink_x_0.set_line_width(i, widths[i])
-            self.qtgui_time_sink_x_0.set_line_color(i, colors[i])
-            self.qtgui_time_sink_x_0.set_line_style(i, styles[i])
-            self.qtgui_time_sink_x_0.set_line_marker(i, markers[i])
-            self.qtgui_time_sink_x_0.set_line_alpha(i, alphas[i])
-
-        self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.qwidget(), Qt.QWidget)
-        self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
+        _select_check_box = Qt.QCheckBox("'select'")
+        self._select_choices = {True: 1, False: 0}
+        self._select_choices_inv = dict((v,k) for k,v in self._select_choices.items())
+        self._select_callback = lambda i: Qt.QMetaObject.invokeMethod(_select_check_box, "setChecked", Qt.Q_ARG("bool", self._select_choices_inv[i]))
+        self._select_callback(self.select)
+        _select_check_box.stateChanged.connect(lambda i: self.set_select(self._select_choices[bool(i)]))
+        self.top_layout.addWidget(_select_check_box)
+        self.network_tcp_source_0 = network.tcp_source.tcp_source(itemsize=gr.sizeof_char*1,addr='127.0.0.1',port=12345,server=False)
+        self.network_tcp_sink_0 = network.tcp_sink(gr.sizeof_float, 1, '127.0.0.1', 12444,2)
         self.digital_psk_mod_0 = digital.psk.psk_mod(
-            constellation_points=8,
+            constellation_points=16,
             mod_code="gray",
             differential=True,
-            samples_per_symbol=2,
+            samples_per_symbol=8,
             excess_bw=0.35,
             verbose=False,
             log=False)
         self.digital_psk_demod_0 = digital.psk.psk_demod(
-            constellation_points=8,
+            constellation_points=16,
             differential=True,
-            samples_per_symbol=2,
+            samples_per_symbol=8,
             excess_bw=0.35,
             phase_bw=(6.28/100.0),
             timing_bw=(6.28/100.0),
             mod_code="gray",
             verbose=False,
             log=False)
-        self.channels_channel_model_0 = channels.channel_model(
-            noise_voltage=afstand,
-            frequency_offset=0.0,
-            epsilon=1.0,
-            taps=[1.0],
-            noise_seed=0,
-            block_tags=False)
-        self.blocks_unpacked_to_packed_xx_0 = blocks.unpacked_to_packed_bb(1, gr.GR_MSB_FIRST)
-        self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
-        self.blocks_delay_0 = blocks.delay(gr.sizeof_char*1, 4)
-        self.blocks_char_to_float_0_0 = blocks.char_to_float(1, 1)
-        self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
-        self.analog_sig_source_x_0 = analog.sig_source_b(samp_rate, analog.GR_SIN_WAVE, 100, 126, 127, 0)
+        self.blocks_vector_source_x_0 = blocks.vector_source_b((65, 66, 67, 10), True, 1, [])
+        self.blocks_unpacked_to_packed_xx_0 = blocks.unpacked_to_packed_bb(3, gr.GR_MSB_FIRST)
+        self.blocks_uchar_to_float_0 = blocks.uchar_to_float()
+        self.blocks_selector_0 = blocks.selector(gr.sizeof_char*1,select,0)
+        self.blocks_selector_0.set_enabled(True)
+        self.blocks_delay_0 = blocks.delay(gr.sizeof_char*1, 8)
+        self._afstand_range = Range(0, 2, 0.01, 0, 200)
+        self._afstand_win = RangeWidget(self._afstand_range, self.set_afstand, "'afstand'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._afstand_win)
 
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_sig_source_x_0, 0), (self.blocks_throttle2_0, 0))
-        self.connect((self.blocks_char_to_float_0, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.blocks_char_to_float_0_0, 0), (self.qtgui_time_sink_x_0_1, 0))
         self.connect((self.blocks_delay_0, 0), (self.blocks_unpacked_to_packed_xx_0, 0))
-        self.connect((self.blocks_throttle2_0, 0), (self.blocks_char_to_float_0_0, 0))
-        self.connect((self.blocks_throttle2_0, 0), (self.digital_psk_mod_0, 0))
-        self.connect((self.blocks_unpacked_to_packed_xx_0, 0), (self.blocks_char_to_float_0, 0))
-        self.connect((self.channels_channel_model_0, 0), (self.digital_psk_demod_0, 0))
+        self.connect((self.blocks_selector_0, 0), (self.digital_psk_mod_0, 0))
+        self.connect((self.blocks_uchar_to_float_0, 0), (self.network_tcp_sink_0, 0))
+        self.connect((self.blocks_unpacked_to_packed_xx_0, 0), (self.blocks_uchar_to_float_0, 0))
+        self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_selector_0, 0))
         self.connect((self.digital_psk_demod_0, 0), (self.blocks_delay_0, 0))
-        self.connect((self.digital_psk_mod_0, 0), (self.channels_channel_model_0, 0))
+        self.connect((self.digital_psk_mod_0, 0), (self.digital_psk_demod_0, 0))
+        self.connect((self.network_tcp_source_0, 0), (self.blocks_selector_0, 1))
 
 
     def closeEvent(self, event):
@@ -229,22 +133,25 @@ class Labo_8(gr.top_block, Qt.QWidget):
 
         event.accept()
 
+    def get_select(self):
+        return self.select
+
+    def set_select(self, select):
+        self.select = select
+        self._select_callback(self.select)
+        self.blocks_selector_0.set_input_index(self.select)
+
     def get_samp_rate(self):
         return self.samp_rate
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
-        self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
-        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
-        self.qtgui_time_sink_x_0_1.set_samp_rate(self.samp_rate)
 
     def get_afstand(self):
         return self.afstand
 
     def set_afstand(self, afstand):
         self.afstand = afstand
-        self.channels_channel_model_0.set_noise_voltage(self.afstand)
 
 
 
