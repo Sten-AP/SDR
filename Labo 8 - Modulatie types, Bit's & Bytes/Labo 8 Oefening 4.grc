@@ -126,27 +126,12 @@ blocks:
     coordinate: [320, 188.0]
     rotation: 0
     state: enabled
-- name: blocks_uchar_to_float_0
-  id: blocks_uchar_to_float
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [544, 400.0]
-    rotation: 0
-    state: true
 - name: blocks_unpacked_to_packed_xx_0
   id: blocks_unpacked_to_packed_xx
   parameters:
     affinity: ''
     alias: ''
-    bits_per_chunk: '3'
+    bits_per_chunk: '1'
     comment: ''
     endianness: gr.GR_MSB_FIRST
     maxoutbuf: '0'
@@ -191,7 +176,7 @@ blocks:
     freq_offset: '0.0'
     maxoutbuf: '0'
     minoutbuf: '0'
-    noise_voltage: '0.0'
+    noise_voltage: afstand
     seed: '0'
     taps: '1.0'
   states:
@@ -200,15 +185,15 @@ blocks:
     bus_structure: null
     coordinate: [824, 180.0]
     rotation: 0
-    state: bypassed
+    state: enabled
 - name: digital_psk_demod_0
   id: digital_psk_demod
   parameters:
     affinity: ''
     alias: ''
     comment: ''
-    constellation_points: '16'
-    differential: 'True'
+    constellation_points: '4'
+    differential: 'False'
     excess_bw: '0.35'
     freq_bw: 6.28/100.0
     log: 'False'
@@ -216,7 +201,7 @@ blocks:
     minoutbuf: '0'
     mod_code: '"gray"'
     phase_bw: 6.28/100.0
-    samples_per_symbol: '8'
+    samples_per_symbol: '2'
     timing_bw: 6.28/100.0
     verbose: 'False'
   states:
@@ -232,14 +217,14 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    constellation_points: '16'
-    differential: 'True'
+    constellation_points: '4'
+    differential: 'False'
     excess_bw: '0.35'
     log: 'False'
     maxoutbuf: '0'
     minoutbuf: '0'
     mod_code: '"gray"'
-    samples_per_symbol: '8'
+    samples_per_symbol: '2'
     verbose: 'False'
   states:
     bus_sink: false
@@ -257,15 +242,15 @@ blocks:
     comment: ''
     mode: '2'
     port: '12444'
-    type: float
+    type: byte
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [752, 388.0]
+    coordinate: [544, 388.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: network_tcp_source_0
   id: network_tcp_source
   parameters:
@@ -286,8 +271,8 @@ blocks:
     coordinate: [112, 252.0]
     rotation: 0
     state: enabled
-- name: qtgui_const_sink_x_0
-  id: qtgui_const_sink_x
+- name: qtgui_freq_sink_x_0
+  id: qtgui_freq_sink_x
   parameters:
     affinity: ''
     alias: ''
@@ -302,60 +287,50 @@ blocks:
     alpha8: '1.0'
     alpha9: '1.0'
     autoscale: 'False'
+    average: '1.0'
     axislabels: 'True'
+    bw: samp_rate
     color1: '"blue"'
-    color10: '"red"'
+    color10: '"dark blue"'
     color2: '"red"'
-    color3: '"red"'
-    color4: '"red"'
-    color5: '"red"'
-    color6: '"red"'
-    color7: '"red"'
-    color8: '"red"'
-    color9: '"red"'
+    color3: '"green"'
+    color4: '"black"'
+    color5: '"cyan"'
+    color6: '"magenta"'
+    color7: '"yellow"'
+    color8: '"dark red"'
+    color9: '"dark green"'
     comment: ''
+    ctrlpanel: 'False'
+    fc: '0'
+    fftsize: '1024'
+    freqhalf: 'True'
     grid: 'False'
     gui_hint: ''
+    label: Relative Gain
     label1: ''
-    label10: ''
-    label2: ''
-    label3: ''
-    label4: ''
-    label5: ''
-    label6: ''
-    label7: ''
-    label8: ''
-    label9: ''
+    label10: ''''''
+    label2: ''''''
+    label3: ''''''
+    label4: ''''''
+    label5: ''''''
+    label6: ''''''
+    label7: ''''''
+    label8: ''''''
+    label9: ''''''
     legend: 'True'
-    marker1: '0'
-    marker10: '0'
-    marker2: '0'
-    marker3: '0'
-    marker4: '0'
-    marker5: '0'
-    marker6: '0'
-    marker7: '0'
-    marker8: '0'
-    marker9: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
     name: '""'
     nconnections: '1'
-    size: '1024'
-    style1: '0'
-    style10: '0'
-    style2: '0'
-    style3: '0'
-    style4: '0'
-    style5: '0'
-    style6: '0'
-    style7: '0'
-    style8: '0'
-    style9: '0'
+    norm_window: 'False'
+    showports: 'False'
     tr_chan: '0'
     tr_level: '0.0'
     tr_mode: qtgui.TRIG_MODE_FREE
-    tr_slope: qtgui.TRIG_SLOPE_POS
     tr_tag: '""'
     type: complex
+    units: dB
     update_time: '0.10'
     width1: '1'
     width10: '1'
@@ -367,17 +342,16 @@ blocks:
     width7: '1'
     width8: '1'
     width9: '1'
-    xmax: '2'
-    xmin: '-2'
-    ymax: '2'
-    ymin: '-2'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '10'
+    ymin: '-140'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [1072, 340.0]
     rotation: 0
-    state: disabled
+    state: true
 - name: virtual_sink_0
   id: virtual_sink
   parameters:
@@ -390,7 +364,7 @@ blocks:
     bus_structure: null
     coordinate: [1480, 220.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: virtual_source_0
   id: virtual_source
   parameters:
@@ -403,16 +377,15 @@ blocks:
     bus_structure: null
     coordinate: [64, 396.0]
     rotation: 0
-    state: true
+    state: enabled
 
 connections:
 - [blocks_delay_0, '0', virtual_sink_0, '0']
 - [blocks_selector_0, '0', digital_psk_mod_0, '0']
-- [blocks_uchar_to_float_0, '0', network_tcp_sink_0, '0']
-- [blocks_unpacked_to_packed_xx_0, '0', blocks_uchar_to_float_0, '0']
+- [blocks_unpacked_to_packed_xx_0, '0', network_tcp_sink_0, '0']
 - [blocks_vector_source_x_0, '0', blocks_selector_0, '0']
 - [channels_channel_model_1, '0', digital_psk_demod_0, '0']
-- [channels_channel_model_1, '0', qtgui_const_sink_x_0, '0']
+- [channels_channel_model_1, '0', qtgui_freq_sink_x_0, '0']
 - [digital_psk_demod_0, '0', blocks_delay_0, '0']
 - [digital_psk_mod_0, '0', channels_channel_model_1, '0']
 - [network_tcp_source_0, '0', blocks_selector_0, '1']
