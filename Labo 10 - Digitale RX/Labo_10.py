@@ -69,7 +69,7 @@ class Labo_10(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.sps = sps = 16
+        self.sps = sps = 8
         self.shift = shift = 9.8
         self.samp_rate = samp_rate = 1e6
         self.random = random = 0
@@ -127,7 +127,7 @@ class Labo_10(gr.top_block, Qt.QWidget):
             firdes.root_raised_cosine(
                 1,
                 samp_rate,
-                1.0,
+                125e3,
                 0.35,
                 (11*sps)))
         self.root_raised_cosine_filter_0 = filter.fir_filter_ccf(
@@ -135,13 +135,13 @@ class Labo_10(gr.top_block, Qt.QWidget):
             firdes.root_raised_cosine(
                 1,
                 samp_rate,
-                1.0,
+                125e3,
                 0.35,
                 (11*sps)))
         self.qtgui_time_sink_x_1 = qtgui.time_sink_f(
             1024, #size
             samp_rate, #samp_rate
-            "", #name
+            'Received data', #name
             1, #number of inputs
             None # parent
         )
@@ -1160,13 +1160,13 @@ class Labo_10(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_selector_0, 0), (self.blocks_repeat_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.qtgui_const_sink_x_0, 0))
         self.connect((self.blocks_throttle2_0, 0), (self.qtgui_freq_sink_x_0, 0))
+        self.connect((self.blocks_throttle2_0, 0), (self.root_raised_cosine_filter_0, 0))
         self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_selector_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.analog_agc_xx_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_const_sink_x_0_0, 0))
         self.connect((self.channels_channel_model_0, 0), (self.qtgui_freq_sink_x_0_0_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.blocks_char_to_float_1, 0))
         self.connect((self.digital_constellation_encoder_bc_0, 0), (self.blocks_throttle2_0, 0))
-        self.connect((self.digital_constellation_encoder_bc_0, 0), (self.root_raised_cosine_filter_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_constellation_decoder_cb_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_const_sink_x_0_0_0_0_1_0, 0))
         self.connect((self.digital_costas_loop_cc_0, 0), (self.qtgui_freq_sink_x_0_0_0_0_0_1_0, 0))
@@ -1204,8 +1204,8 @@ class Labo_10(gr.top_block, Qt.QWidget):
         self.digital_fll_band_edge_cc_0.set_loop_bandwidth((2*3.1415/self.sps/100))
         self.qtgui_eye_sink_x_0.set_samp_per_symbol(self.sps)
         self.qtgui_eye_sink_x_0_0.set_samp_per_symbol((int(self.sps/2)))
-        self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, 1.0, 0.35, (11*self.sps)))
-        self.root_raised_cosine_filter_0_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, 1.0, 0.35, (11*self.sps)))
+        self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, 125e3, 0.35, (11*self.sps)))
+        self.root_raised_cosine_filter_0_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, 125e3, 0.35, (11*self.sps)))
 
     def get_shift(self):
         return self.shift
@@ -1233,8 +1233,8 @@ class Labo_10(gr.top_block, Qt.QWidget):
         self.qtgui_freq_sink_x_0_0_0_0_0_1_0.set_frequency_range(0, self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_1.set_samp_rate(self.samp_rate)
-        self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, 1.0, 0.35, (11*self.sps)))
-        self.root_raised_cosine_filter_0_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, 1.0, 0.35, (11*self.sps)))
+        self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, 125e3, 0.35, (11*self.sps)))
+        self.root_raised_cosine_filter_0_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, 125e3, 0.35, (11*self.sps)))
 
     def get_random(self):
         return self.random

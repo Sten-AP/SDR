@@ -181,7 +181,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: '16'
+    value: '8'
   states:
     bus_sink: false
     bus_source: false
@@ -546,7 +546,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [920, 972.0]
+    coordinate: [920, 988.0]
     rotation: 0
     state: true
 - name: qtgui_const_sink_x_0
@@ -1006,7 +1006,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [920, 1140.0]
+    coordinate: [920, 1156.0]
     rotation: 0
     state: true
 - name: qtgui_const_sink_x_0_0_0_0_1
@@ -1282,7 +1282,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1144, 532.0]
+    coordinate: [1328, 476.0]
     rotation: 0
     state: true
 - name: qtgui_eye_sink_x_0
@@ -1378,7 +1378,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [920, 1316.0]
+    coordinate: [920, 1332.0]
     rotation: 0
     state: true
 - name: qtgui_eye_sink_x_0_0
@@ -1474,7 +1474,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1264, 956.0]
+    coordinate: [1264, 972.0]
     rotation: 0
     state: true
 - name: qtgui_freq_sink_x_0
@@ -1636,7 +1636,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1144, 444.0]
+    coordinate: [1328, 388.0]
     rotation: 0
     state: true
 - name: qtgui_freq_sink_x_0_0_0
@@ -1960,7 +1960,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [920, 1228.0]
+    coordinate: [920, 1244.0]
     rotation: 0
     state: true
 - name: qtgui_freq_sink_x_0_0_0_0_0_1
@@ -2275,7 +2275,7 @@ blocks:
     marker7: '-1'
     marker8: '-1'
     marker9: '-1'
-    name: '""'
+    name: Received data
     nconnections: '1'
     size: '1024'
     srate: samp_rate
@@ -2333,13 +2333,13 @@ blocks:
     minoutbuf: '0'
     ntaps: 11*sps
     samp_rate: samp_rate
-    sym_rate: '1.0'
+    sym_rate: 125e3
     type: fir_filter_ccf
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [896, 420.0]
+    coordinate: [1080, 364.0]
     rotation: 0
     state: true
 - name: root_raised_cosine_filter_0_0
@@ -2356,7 +2356,7 @@ blocks:
     minoutbuf: '0'
     ntaps: 11*sps
     samp_rate: samp_rate
-    sym_rate: '1.0'
+    sym_rate: 125e3
     type: fir_filter_ccf
   states:
     bus_sink: false
@@ -2375,7 +2375,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1144, 388.0]
+    coordinate: [1328, 332.0]
     rotation: 0
     state: true
 - name: virtual_sink_1
@@ -2433,13 +2433,13 @@ connections:
 - [blocks_selector_0, '0', blocks_repeat_0, '0']
 - [blocks_throttle2_0, '0', qtgui_const_sink_x_0, '0']
 - [blocks_throttle2_0, '0', qtgui_freq_sink_x_0, '0']
+- [blocks_throttle2_0, '0', root_raised_cosine_filter_0, '0']
 - [blocks_vector_source_x_0, '0', blocks_selector_0, '0']
 - [channels_channel_model_0, '0', qtgui_const_sink_x_0_0, '0']
 - [channels_channel_model_0, '0', qtgui_freq_sink_x_0_0_0, '0']
 - [channels_channel_model_0, '0', virtual_sink_1, '0']
 - [digital_constellation_decoder_cb_0, '0', blocks_char_to_float_1, '0']
 - [digital_constellation_encoder_bc_0, '0', blocks_throttle2_0, '0']
-- [digital_constellation_encoder_bc_0, '0', root_raised_cosine_filter_0, '0']
 - [digital_costas_loop_cc_0, '0', digital_constellation_decoder_cb_0, '0']
 - [digital_costas_loop_cc_0, '0', qtgui_const_sink_x_0_0_0_0_1_0, '0']
 - [digital_costas_loop_cc_0, '0', qtgui_freq_sink_x_0_0_0_0_0_1_0, '0']
